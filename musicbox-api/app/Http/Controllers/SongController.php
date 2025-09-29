@@ -7,33 +7,62 @@ use Illuminate\Http\Request;
 
 class SongController extends Controller
 {
-    public function index() {
-        return Song::with('album.artist')->paginate(10);
+    public function index(Request $request) {
+        $perPage = $request->get('per_page', 10);
+        $songs = Song::with('album','album.artist')->paginate($perPage);
+
+        return response()->json([
+            'message' => 'Songs retrieved successfully',
+            'data' => $songs
+        ]);
     }
 
     public function store(Request $request) {
         $request->validate([
             'title' => 'required|string|max:255',
-            'duration' => 'required|integer|min:1',
-            'album_id' => 'required|exists:albums,id',
+            'duration' => 'required|integer',
+            'album_id' => 'required|exists:albums,id'
         ]);
 
-        return Song::create($request->all());
-    }
+        $song = Song::create([
+            'title' => $request->title,
+            'duration' => $request->duration,
+            'album_id' => $request->album_id,
+            'user_id' => auth()->id()
+        ]);
 
-    public function show($id) {
-        return Song::with('album.artist')->findOrFail($id);
+        return response()->json([
+            'message' => 'Song created successfully',
+            'data' => $song
+        ], 201);
     }
 
     public function update(Request $request, $id) {
         $song = Song::findOrFail($id);
-        $song->update($request->all());
-        return $song;
+
+        if($song->user_id !== auth()->id()) {
+            return response()->json(['message'=>'Unauthorized'],403);
+        }
+
+        $song->update($request->only(['title','duration','album_id']));
+
+        return response()->json([
+            'message' => 'Song updated successfully',
+            'data' => $song
+        ]);
     }
 
     public function destroy($id) {
         $song = Song::findOrFail($id);
+
+        if($song->user_id !== auth()->id()) {
+            return response()->json(['message'=>'Unauthorized'],403);
+        }
+
         $song->delete();
-        return response()->json(['message' => 'Deleted successfully']);
+
+        return response()->json([
+            'message' => 'Song deleted successfully'
+        ]);
     }
 }
