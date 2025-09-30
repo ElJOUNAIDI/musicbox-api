@@ -1,5 +1,8 @@
 {
     "require-dev": {
         "laravel/breeze": "^1.29"
+    },
+    "require": {
+        "darkaonline/l5-swagger": "^2.1"
     }
 }

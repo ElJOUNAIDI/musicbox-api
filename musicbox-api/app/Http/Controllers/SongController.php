@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class SongController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/songs",
+     *     summary="Get all songs",
+     *     tags={"Songs"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(response=200, description="Songs retrieved successfully")
+     * )
+     */
     public function index(Request $request) {
         $perPage = $request->get('per_page', 10);
         $songs = Song::with('album','album.artist')->paginate($perPage);
@@ -17,6 +26,24 @@ class SongController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/songs",
+     *     summary="Create a new song",
+     *     tags={"Songs"},
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"title","duration","album_id"},
+     *             @OA\Property(property="title", type="string"),
+     *             @OA\Property(property="duration", type="integer"),
+     *             @OA\Property(property="album_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Song created successfully")
+     * )
+     */
     public function store(Request $request) {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -36,7 +63,32 @@ class SongController extends Controller
             'data' => $song
         ], 201);
     }
-
+    
+    /**
+     * @OA\Put(
+     *     path="/api/songs/{id}",
+     *     summary="Update a song",
+     *     tags={"Songs"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Song ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="title", type="string"),
+     *             @OA\Property(property="duration", type="integer"),
+     *             @OA\Property(property="album_id", type="integer")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Song updated successfully"),
+     *     @OA\Response(response=403, description="Unauthorized")
+     * )
+     */
     public function update(Request $request, $id) {
         $song = Song::findOrFail($id);
 
@@ -51,7 +103,24 @@ class SongController extends Controller
             'data' => $song
         ]);
     }
-
+    
+    /**
+     * @OA\Delete(
+     *     path="/api/songs/{id}",
+     *     summary="Delete a song",
+     *     tags={"Songs"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Song ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Song deleted successfully"),
+     *     @OA\Response(response=403, description="Unauthorized")
+     * )
+     */
     public function destroy($id) {
         $song = Song::findOrFail($id);
 
