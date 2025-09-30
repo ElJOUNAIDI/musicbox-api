@@ -7,22 +7,70 @@ use Illuminate\Http\Request;
 
 class AlbumController extends Controller
 {
-    /**
+/**
  * @OA\Get(
  *     path="/api/albums",
- *     summary="Get all albums",
+ *     summary="Get all albums (with optional filter by year)",
  *     tags={"Albums"},
  *     security={{"sanctum":{}}},
+ *     @OA\Parameter(
+ *         name="year",
+ *         in="query",
+ *         description="Filter by album release year",
+ *         required=false,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Parameter(
+ *         name="per_page",
+ *         in="query",
+ *         description="Number of results per page",
+ *         required=false,
+ *         @OA\Schema(type="integer")
+ *     ),
  *     @OA\Response(response=200, description="Albums retrieved successfully")
  * )
  */
     public function index(Request $request) {
-        $perPage = $request->get('per_page', 10);
-        $albums = Album::with('songs','artist')->paginate($perPage);
+    $perPage = $request->get('per_page', 10);
+
+    $query = Album::with('songs', 'artist');
+
+    
+    if ($request->has('year')) {
+        $query->where('year', $request->get('year'));
+    }
+
+    $albums = $query->paginate($perPage);
+
+    return response()->json([
+        'message' => 'Albums retrieved successfully',
+        'data' => $albums
+    ]);
+    }
+
+    /**
+ * @OA\Get(
+ *     path="/api/albums/{id}",
+ *     summary="Get album by ID",
+ *     tags={"Albums"},
+ *     security={{"sanctum":{}}},
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         description="Album ID",
+ *         required=true,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(response=200, description="Album retrieved successfully"),
+ *     @OA\Response(response=404, description="Album not found")
+ * )
+ */
+    public function show($id) {
+        $album = Album::with('songs', 'artist')->findOrFail($id);
 
         return response()->json([
-            'message' => 'Albums retrieved successfully',
-            'data' => $albums
+            'message' => 'Album retrieved successfully',
+            'data' => $album
         ]);
     }
 

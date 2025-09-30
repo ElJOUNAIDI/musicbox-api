@@ -25,7 +25,32 @@ class SongController extends Controller
             'data' => $songs
         ]);
     }
+/**
+     * @OA\Get(
+     *     path="/api/songs/{id}",
+     *     summary="Get song by ID",
+     *     tags={"Songs"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Song ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Song retrieved successfully"),
+     *     @OA\Response(response=404, description="Song not found")
+     * )
+     */
+    public function show($id) {
+        $song = Song::with('album.artist')->findOrFail($id);
 
+        return response()->json([
+            'message' => 'Song retrieved successfully',
+            'data' => $song
+        ]);
+    }
+    
     /**
      * @OA\Post(
      *     path="/api/songs",

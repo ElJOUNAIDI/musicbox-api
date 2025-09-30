@@ -11,8 +11,28 @@
                 "tags": [
                     "Albums"
                 ],
-                "summary": "Get all albums",
+                "summary": "Get all albums (with optional filter by year)",
                 "operationId": "735609843dcfb89ee4e12e340eddca25",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Filter by album release year",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Albums retrieved successfully"
@@ -69,6 +89,37 @@
             }
         },
         "/api/albums/{id}": {
+            "get": {
+                "tags": [
+                    "Albums"
+                ],
+                "summary": "Get album by ID",
+                "operationId": "71e9c4179582355e89419e6f6994c418",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Album ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Album retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Album not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Albums"
@@ -158,8 +209,28 @@
                 "tags": [
                     "Artists"
                 ],
-                "summary": "Get all artists",
+                "summary": "Get all artists (with optional filter by genre)",
                 "operationId": "2c8aed1387cca1c65d98da7ee11ac926",
+                "parameters": [
+                    {
+                        "name": "genre",
+                        "in": "query",
+                        "description": "Filter by music genre",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of results per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Artists retrieved successfully"
@@ -216,6 +287,37 @@
             }
         },
         "/api/artists/{id}": {
+            "get": {
+                "tags": [
+                    "Artists"
+                ],
+                "summary": "Get artist by ID (with albums and songs)",
+                "operationId": "d0b68c06b8bc310fbe24c6d3ea80dac3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Artist ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Artist retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Artist not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Artists"
@@ -363,6 +465,37 @@
             }
         },
         "/api/songs/{id}": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "summary": "Get song by ID",
+                "operationId": "4325a96361d1d3820cc0580eaae9197c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Song ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Song retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Song not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
             "put": {
                 "tags": [
                     "Songs"
@@ -461,5 +594,15 @@
             "name": "Songs",
             "description": "Songs"
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Use token from login",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
 }

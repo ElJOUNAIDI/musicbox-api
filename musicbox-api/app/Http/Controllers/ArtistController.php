@@ -8,23 +8,72 @@ use Illuminate\Http\Request;
 class ArtistController extends Controller
 {
 /**
-     * @OA\Get(
-     *     path="/api/artists",
-     *     summary="Get all artists",
-     *     tags={"Artists"},
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response=200, description="Artists retrieved successfully")
-     * )
-     */
+ * @OA\Get(
+ *     path="/api/artists",
+ *     summary="Get all artists (with optional filter by genre)",
+ *     tags={"Artists"},
+ *     security={{"sanctum":{}}},
+ *     @OA\Parameter(
+ *         name="genre",
+ *         in="query",
+ *         description="Filter by music genre",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="per_page",
+ *         in="query",
+ *         description="Number of results per page",
+ *         required=false,
+ *         @OA\Schema(type="integer")
+ *     ),
+ *     @OA\Response(response=200, description="Artists retrieved successfully")
+ * )
+ */
     public function index(Request $request) {
-        $perPage = $request->get('per_page', 10); // عدد العناصر في الصفحة
-        $artists = Artist::with('albums.songs')->paginate($perPage);
+        $perPage = $request->get('per_page', 10); 
+
+        $query = Artist::with('albums.songs');
+
+        
+        if ($request->has('genre')) {
+            $query->where('genre', $request->get('genre'));
+        }
+
+        $artists = $query->paginate($perPage);
 
         return response()->json([
             'message' => 'Artists retrieved successfully',
             'data' => $artists
         ]);
     }
+
+        /**
+     * @OA\Get(
+     *     path="/api/artists/{id}",
+     *     summary="Get artist by ID (with albums and songs)",
+     *     tags={"Artists"},
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Artist ID",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Artist retrieved successfully"),
+     *     @OA\Response(response=404, description="Artist not found")
+     * )
+     */
+    public function show($id) {
+        $artist = Artist::with('albums.songs')->findOrFail($id);
+
+        return response()->json([
+            'message' => 'Artist retrieved successfully',
+            'data' => $artist
+        ]);
+    }
+
 
         /**
      * @OA\Post(

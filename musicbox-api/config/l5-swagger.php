@@ -9,7 +9,12 @@ return [
                 'description' => 'API documentation for MusicBox project',
                 'version' => '1.0.0',
             ],
-
+            'servers' => [
+                [
+                'url' => env('APP_URL', 'http://127.0.0.1:8000'),
+                'description' => 'Local server'
+                ],
+            ],
             'routes' => [
                 /*
                  * Route for accessing api documentation interface
@@ -172,6 +177,12 @@ return [
         */
         'securityDefinitions' => [
             'securitySchemes' => [
+                'sanctum' => [
+                'type' => 'apiKey',
+                'description' => 'Use token from login',
+                'name' => 'Authorization',
+                'in' => 'header',
+            ],
                 /*
                  * Examples of Security schemes
                  */
