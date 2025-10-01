@@ -579,6 +579,36 @@
                     }
                 ]
             }
+        },
+        "/api/songs/search": {
+            "get": {
+                "tags": [
+                    "Songs"
+                ],
+                "summary": "Rechercher des chansons par titre ou artiste",
+                "operationId": "e1a974ad7df9d6985c4b5a8084fb042f",
+                "parameters": [
+                    {
+                        "name": "query",
+                        "in": "query",
+                        "description": "Mot-clé à rechercher (titre ou artiste)",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Résultats de recherche des chansons"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "tags": [

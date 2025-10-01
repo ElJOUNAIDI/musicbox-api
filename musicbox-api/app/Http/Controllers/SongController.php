@@ -159,4 +159,37 @@ class SongController extends Controller
             'message' => 'Song deleted successfully'
         ]);
     }
+    /**
+ * @OA\Get(
+ *     path="/api/songs/search",
+ *     summary="Rechercher des chansons par titre ou artiste",
+ *     tags={"Songs"},
+ *     security={{"sanctum":{}}},
+ *     @OA\Parameter(
+ *         name="query",
+ *         in="query",
+ *         description="Mot-clé à rechercher (titre ou artiste)",
+ *         required=true,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Response(response=200, description="Résultats de recherche des chansons")
+ * )
+ */
+    public function search(Request $request)
+    {
+        $query = $request->get('query');
+
+        $songs = Song::with('album.artist')
+            ->where('title', 'LIKE', "%{$query}%")
+            ->orWhereHas('album.artist', function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
+        return response()->json([
+            'message' => 'Résultats de recherche',
+            'data' => $songs
+        ]);
+    }
+
 }

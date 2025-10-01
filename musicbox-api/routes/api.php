@@ -19,6 +19,7 @@ use App\Http\Controllers\SongController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/songs/search', [SongController::class, 'search']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('artists', ArtistController::class);
